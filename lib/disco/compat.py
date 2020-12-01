@@ -79,7 +79,7 @@ else:
 
     import SocketServer as socket_server
     from urllib import urlencode
-    from urlparse import urlparse
+    # from urlparse import urlparse
     import httplib as httplib
     import BaseHTTPServer as http_server
 

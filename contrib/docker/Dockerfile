@@ -1,13 +1,19 @@
-FROM ubuntu
-MAINTAINER gijs@pythonic.nl
+FROM ubuntu:18.04
+LABEL author=gijs@pythonic.nl maintainer=andres.kesk@gmail.com
 ENV DEBIAN_FRONTEND noninteractive
+
+# Clear python2
+RUN apt-get autoremove python* -y
 
 ## install requirements
 RUN apt-get update
-RUN apt-get install -y curl erlang git make python openssh-server supervisor
+RUN apt-get install -y curl erlang git make python3 python3-pip openssh-server
+RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN ln -s /usr/bin/pip3 /usr/bin/pip
+RUN pip install supervisor
 
 ## add user for disco
-RUN adduser --system disco --shell /bin/sh
+RUN adduser --system disco --shell /bin/bash
 
 # setup ssh
 RUN echo root:disco | chpasswd
@@ -22,17 +28,18 @@ RUN cat /etc/ssh/ssh_host_rsa_key.pub >> /home/disco/.ssh/known_hosts
 RUN chown disco -R /home/disco/.ssh
 
 ## install disco
-RUN git clone https://github.com/discoproject/disco.git /disco
-RUN cd /disco &&  make install
-RUN cd /disco/lib && python setup.py install
+ENV DISCO_HOME=/disco
+RUN git clone https://github.com/andres-k/disco.git ${DISCO_HOME}}
+WORKDIR ${DISCO_HOME}
+RUN make install
+RUN cd ${DISCO_HOME}/lib && python setup.py install
 RUN chown -R disco /usr/var/disco
 
 ## configure the supervisor which will start ssh & docker
-ADD supervisor.conf /etc/supervisor/conf.d/disco.conf
+ADD supervisor.conf /etc/supervisor/supervisord.conf
 RUN sed -i 's/without-password/yes/g' /etc/ssh/sshd_config
 
 EXPOSE 22
 EXPOSE 8990
 EXPOSE 8989
-CMD ["/usr/bin/supervisord"]
-
+CMD ["/usr/local/bin/supervisord"]

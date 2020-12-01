@@ -12,6 +12,7 @@
 *.ropeproject
 *~
 *.swp
+.idea
 master/deps
 master/ebin
 doc/.build/
