@@ -37,9 +37,10 @@ RUN cd ${DISCO_HOME}/lib && python setup.py install
 RUN chown -R disco /usr/var/disco
 
 ## Setup folders for logging and dfds
-RUN mkdir -p /var/log/disco
-RUN mkdir -p /dfds
+RUN mkdir -p /var/log
+RUN mkdir -p /ddfs
 RUN touch /var/log/disco.log
+RUN chown -R disco /ddfs
 
 ## configure the supervisor which will start ssh & docker
 ADD supervisor.conf /etc/supervisor/supervisord.conf
