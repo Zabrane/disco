@@ -29,7 +29,7 @@ RUN chown disco -R /home/disco/.ssh
 
 ## install disco
 ENV DISCO_HOME=/disco
-RUN git clone https://github.com/andres-k/disco.git ${DISCO_HOME}}
+RUN git clone https://github.com/andres-k/disco.git ${DISCO_HOME}
 WORKDIR ${DISCO_HOME}
 RUN make install
 RUN cd ${DISCO_HOME}/lib && python setup.py install
