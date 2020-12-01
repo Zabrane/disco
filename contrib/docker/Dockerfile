@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 LABEL author=gijs@pythonic.nl maintainer=andres.kesk@gmail.com
 ENV DEBIAN_FRONTEND noninteractive
 
-# Clear python2
+## Clear python2
 RUN apt-get autoremove python* -y
 
 ## install requirements
@@ -15,7 +15,7 @@ RUN pip install supervisor
 ## add user for disco
 RUN adduser --system disco --shell /bin/bash
 
-# setup ssh
+## setup ssh
 RUN echo root:disco | chpasswd
 RUN mkdir -p /var/run/sshd
 
@@ -29,11 +29,17 @@ RUN chown disco -R /home/disco/.ssh
 
 ## install disco
 ENV DISCO_HOME=/disco
+# DISCO_HOME also set in supervisor.conf
 RUN git clone https://github.com/andres-k/disco.git ${DISCO_HOME}
 WORKDIR ${DISCO_HOME}
 RUN make install
 RUN cd ${DISCO_HOME}/lib && python setup.py install
 RUN chown -R disco /usr/var/disco
+
+## Setup folders for logging and dfds
+RUN mkdir -p /var/log/disco
+RUN mkdir -p /dfds
+RUN touch /var/log/disco.log
 
 ## configure the supervisor which will start ssh & docker
 ADD supervisor.conf /etc/supervisor/supervisord.conf
